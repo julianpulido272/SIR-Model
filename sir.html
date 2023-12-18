@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>SIR</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">SIR</h1>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The Susceptible Infected Removed (SIR) model is designed to simulate
+how a disease spreads across a region.</p>
+<p>Susceptible (<strong>S</strong>) - cells that are susceptible to the
+disease</p>
+<p>Infected (<strong>I</strong>) - cells that are currently infected</p>
+<p>Removed (<strong>R</strong>) - cells that have gotten the disease,
+and now are recovered and the disease has been completely removed from
+the system.</p>
+<p>This package utilizes a matrix to design the model with values of 0,
+1 and 2 representing Susceptible, Infected, and Removed states
+respectively. The matrix can be instantiated with a random infected
+population, or can be instantiated with infected cells in the corner.
+The model is simulated by taking <code>step</code> functions to simulate
+a spread of the disease. For each step, an infected cell has
+<code>p</code> probability of infecting neighbors, that is any adjacent
+cell to the infected cell. After each step, every current infected cells
+turns into <strong>(R)</strong> removed cells which don’t contain the
+infection.</p>
+<p>It is reasonable to assume that an infected cell spreading to its
+neighbor are independent events, and since two infected cells can both
+infect a common susceptible cell, the event of the susceptible cell
+getting infected is not mutually exclusive. Given that a susceptible
+cell has <code>k</code> neighbors of infected cells, the probability of
+getting infected is given by:</p>
+<p><span class="math display">\[
+P(Susceptible Cell) = 1 - (1- p)^k
+\]</span></p>
+<p>Additionally, the infected probability <code>p</code> can be altered
+to model different results. The simulation ends after all infected cells
+are removed. In a real-case scenario, this model can be simulate how
+real-world diseases like COVID-19 spread among populations.</p>
+</div>
+<div id="sir-model" class="section level2">
+<h2>SIR Model</h2>
+<p>The initial SIR model can be either infected randomly, or only
+infected by the corners.</p>
+<div id="randomly-infected" class="section level3">
+<h3>Randomly Infected</h3>
+<p>Given a number of rows <code>nrow</code>, number of columns
+<code>ncol</code> and a <code>proportion</code> such that <span class="math inline">\(0&lt;proportion&lt;1\)</span> , the function will
+randomly infect a proportion of the cells of the matrix. Note that the
+<code>proportion</code> is defaulted to 0.1, but can be changed by the
+user. Shown below we create a matrix with 10 rows and columns with 1
+values representing infected states.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(SIR)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;SIR&#39;</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:stats&#39;:</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt;     step</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>A <span class="ot">=</span><span class="fu">random_infect</span> (<span class="dv">10</span>,<span class="dv">10</span>, <span class="fl">0.25</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>A</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt;       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt;  [1,]    0    0    0    0    0    1    0    0    0     0</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;  [2,]    0    0    1    0    1    0    0    0    0     0</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt;  [3,]    1    0    0    1    0    0    0    1    0     1</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt;  [4,]    1    0    0    0    1    0    1    0    0     0</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt;  [5,]    0    0    0    0    0    0    0    0    1     0</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt;  [6,]    0    0    0    1    0    0    0    0    0     0</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt;  [7,]    1    0    0    0    0    0    1    0    0     1</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt;  [8,]    0    0    0    0    0    1    0    0    0     0</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt;  [9,]    0    0    0    0    0    0    0    1    1     0</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; [10,]    1    0    0    0    1    1    1    1    0     0</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; attr(,&quot;class&quot;)</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; [1] &quot;SIRmatrix&quot; &quot;matrix&quot;    &quot;array&quot;</span></span></code></pre></div>
+</div>
+<div id="corner-infect" class="section level3">
+<h3>Corner Infect</h3>
+<p>Likewise, the model can initially set to only the corners being
+infected.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(SIR)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">infect_corner</span>(<span class="dv">10</span>,<span class="dv">10</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;  [1,]    1    0    0    0    0    0    0    0    0     1</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt;  [2,]    0    0    0    0    0    0    0    0    0     0</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;  [3,]    0    0    0    0    0    0    0    0    0     0</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt;  [4,]    0    0    0    0    0    0    0    0    0     0</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt;  [5,]    0    0    0    0    0    0    0    0    0     0</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt;  [6,]    0    0    0    0    0    0    0    0    0     0</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt;  [7,]    0    0    0    0    0    0    0    0    0     0</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt;  [8,]    0    0    0    0    0    0    0    0    0     0</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt;  [9,]    0    0    0    0    0    0    0    0    0     0</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; [10,]    1    0    0    0    0    0    0    0    0     1</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; attr(,&quot;class&quot;)</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; [1] &quot;SIRmatrix&quot; &quot;matrix&quot;    &quot;array&quot;</span></span></code></pre></div>
+</div>
+</div>
+<div id="plotting" class="section level2">
+<h2>Plotting</h2>
+<p>The SIR model can be plotted for easier comprehension on how the
+model simulates. Note that this function is a wrapper function for
+<code>image()</code>, so any arguments for <code>image()</code> are also
+accepted in this method. The default colors are set to:</p>
+<p>white - susceptible</p>
+<p>red- infected</p>
+<p>gray - removed</p>
+<p>However, they can also be changed.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(SIR)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">plot</span>(A, <span class="at">main =</span> <span class="st">&quot;SIR Model&quot;</span>, <span class="at">frame.plot =</span><span class="cn">TRUE</span> )</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAjVBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZrY6AAA6OgA6Ojo6OmY6ZmY6ZpA6ZrY6kNtmAABmOjpmkLZmkNtmtrZmtttmtv+QOgCQZjqQkDqQkGaQttuQ2/+2ZgC2Zjq2kDq2kGa229u22/+2///bkDrbtmbbtpDb27bb////AAD/tmb/25D/27b//7b//9v///+JhROtAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAEn0lEQVR4nO3Za1PaQBhA4cUbvWptxbaa2gq1lFr4/z+vbzYJBu14KoONxHM+OEEWzD5uwjqmhd1b6voEnnoCQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQR0Bzb++SGnw5rI8PE370/iSG7y6bIYU8XB/2hwd/PVtirQzbr/raf2KDdYN0NJjdAsovnVejymaB7+Pnh/QpOGI+d0CWlKUQOkwDn4Nnx9QkQYni8V1qIyWQHlqgdFMMYBe5geTJdvVu5R2j/Pz8y/DtHdWAc2/xFp7O+0XUP7NB8fhKlA80wJ6PYxrbH6686kCqtfd/vTmGi3fJ1+CKe2NewQUUx0cf6uO71lBJ6cB+Gu4f5GBqucm+bqbxXem5coJoNC+bFlv+FQ7vUnvnU3v3KTzbacsgEblepqlw0kGqpddUaOM8+17ZxxfypdM4rA/QIvF9xcr18UN0EEzwxJoFrMu0igDNbOfxGdbHB9UY3bG+R5eff71CShWzo/Pw+XEG6C9s+XzcSM/j8l/OBqclxdUuVwySjwYNccl0Cz1DyjfMMqK5rqovlyk1gSLasYpX2V3V1A+rlfQqH5Jb4BiAQzex0yuhitA+ea93PCUQPUmegb3oOY1vQG62Si2LrF6SSyXQwaa5bt2LJK/fooV9adYbKquj9qbhQ3W7Z8a7Z108zHf7I3zIonHwVQBtfdB1T57ZR+Ut0x9AVrM86dY3hXf3ig2F0xR61VMNzvp99UbXAzT7kl1pV1/jLt9+Ydvj4C2J4EggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBoG0A+nm7DbznP89boE0N7DCBIIEggSCBIIEggSCBIIGg5wXEs30MjzsJBAkECQQJBAkECQQJBAkECQQJBHUFtMbkNuCxBrpAMEIgGCEQjBAIRggEIwSCEQLBCIFghEAwQiAYIRCM2CKgNd5jAz9EIEggSCBIIEggSCBIIEggSCBIIOjp/l/sv8TGAgl0XwJBAkECQQJBAkECQQJBAkG9AuLJPEYCQQJBAkECQQJBAkECQQJBAkECQdv8b5+H/5Q1zksgOC+B4LwEgvMSCM5LIDgvgeC8BILzEgjOSyA4L4HgvLbobzHuMdQFggSCBIIEggSCBIIEggSCBIIEgnoFhN0RZFKBBGolECQQJBAkECQQJBAkECQQtEVAfGZrvMfD4x8iECQQJBAkECQQJBAkECQQJBAkECQQ1BVQ2po6AupfAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBfwA+/zRNw4y1BgAAAABJRU5ErkJggg==" /><!-- --></p>
+</div>
+<div id="simulation" class="section level2">
+<h2>Simulation</h2>
+<p>The SIR model can be simulated to see how the disease spreads among
+the population. Given matrix <code>A</code> and a
+<code>probability</code> , the model can be simulated one step at a
+time:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(SIR)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>A <span class="ot">=</span><span class="fu">step</span>(A, <span class="fl">0.15</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="fu">plot</span>(A, <span class="at">main =</span> <span class="st">&quot;SIR Model&quot;</span>, <span class="at">frame.plot =</span><span class="cn">TRUE</span> )</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAkFBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZrY6AAA6OgA6Ojo6OmY6ZmY6ZpA6ZrY6kNtmAABmOjpmkLZmkNtmtrZmtttmtv+QOgCQZjqQkDqQkGaQttuQ2/+2ZgC2Zjq2kDq2kGa229u22/+2//++vr7bkDrbtmbbtpDb27bb////AAD/tmb/25D/27b//7b//9v///9qF3GuAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAE0UlEQVR4nO3ZbVsaRxhA4cGopG/apGJb3dhKSEqJhf//7/rs7IvApjlxpdmwOeeDF4RhmLmzu6yXaWOfLA29gK89gSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggaCBgNZ/vExp8uN9+fA6nS3jR27y/X0zpIinZ8vm0flHpynSyXx71uv6HQdsGKDWY7YHFP90W48pmif/XH57QIuGI/a3B9RSlEDpIh58mH57QEWaXG02D6Eya4Hy1gKj2WIAfZefLFq29z+n9OJVfn39ZppObyqg9Zs41n5ajgso/88Hx8UuULyyBfTDNM6x9fXJbxVQfdydLR/P0XKefAqmdDofEVBsdfLqz+rxJ46gq+sA/DA9u8tA1WuLfN6t4l+W5ZETQKF9v2V94KUOepE+vVl2LtL5slMWQLPyeFqli0UGqg+7okaZ58v3yTx+lG9ZxMPxAG02717unBePQOfNDkugVey6SLMM1Ox+Ed9t8fi8GnMyz9fw6vtvTEBx5Pz1+7TdeAN0etO+Hhfy29j8L5eT2/KEKg+XjBJPZs3jEmiVxgeULxhlRXNeVD/u0tYGi2rHKZ9l3SMoP66PoFn9ltEAxQEweR07eT/dAcoX7/aGpwSqb6JXcA1q3jMaoMcbxa1TrD4k2sMhA63yVTsOko9+ixX1t1jcVD1cbt8sHLBhf9XYvpNuvuabe+N8kMTzYKqAtu+DqvvsnfugfMs0FqDNOn+L5bvi/RvF5oQpar2K6fFO+nU1wd00vbiqzrSHX+NqX/7iOyKg40kgSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIGh4oL+xt/sd4FM/e98CHWrg/5ZAkECQQJBAkECQQJBAkECQQLt1dvtFPDofItBuAkECQQJBAkECQQJBAkECQQJBXw1Qj83xWzq7e/oUnRECwQiBYIRAMEIgGCEQjBAIRggEIwSCEQLBCIFghEAw4oiAesyxP6AjyAkkkEAC9Z5DIIGeN4dAAj1vDoEEet4cRwzUox67268zZ8dYoN0EEkigNoEggSCBIIEggSCBIIGgzma+yKcKBAkECQQJBAkECQQJBAkECQQJBB3zn32e/ik91iUQrEsgWJdAsC6BYF0CwboEgnUJBOsSCNYlEKxLIFjXUED8F5kec3R2hx/CyxBIIIEE+tw5BII5BII5BII5BII5BII5BII5xgTUI95MZwQKdurMKZBAAv33CIFghEAwQiAYIRCMEAhGCAQjBIIRRwzEK+sxx9PjDxEIEggSCBIIEggSCBIIEggSCBIIEggaCigdTQMBjS+BIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggaB/Ad12tYeCx0VWAAAAAElFTkSuQmCC" /><!-- --></p>
+<p>After each step in the infection stage, every current infected cell
+(red) becomes gray, and any nearby neighbors who get infected will
+become red.</p>
+<p>The model can also be continuously infected until no more infected
+cells remain by using the <code>simulate_sir()</code> function. Note
+that this function returns a <strong>list</strong> of the final matrix,
+iterations, probability, and the proportion that was infected.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">#A is simulated in the function, but not changed </span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>listA <span class="ot">=</span> <span class="fu">simulate_sir</span>(A, <span class="fl">0.2</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>subTitle <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">&quot;Proportion Infected: %f</span><span class="sc">\n</span><span class="st">Iterations: %d&quot;</span> ,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                   listA<span class="sc">$</span>proportion , listA<span class="sc">$</span>iterations)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="fu">plot</span>(listA<span class="sc">$</span>matrix, <span class="at">main=</span> <span class="st">&quot;SIR Model&quot;</span>, <span class="at">sub=</span> subTitle)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="summarizing-results" class="section level2">
+<h2>Summarizing Results</h2>
+<p>Each model simulation be summarized using the <code>summary()</code>,
+which returns a list displaying the following:</p>
+<p><code>$totalCells</code> - number of cells in the total model</p>
+<p><code>$susceptible</code> - proportion of cells that have not gotten
+the disease and are susceptible.</p>
+<p><code>$infected</code> - proportion of cells that are currently
+infected.</p>
+<p><code>$removed</code> - proportion of cells removed the disease
+(immune).</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">summary</span>(listA<span class="sc">$</span>matrix)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; $totalCells</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; [1] 100</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; $susceptible</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; [1] 0.41</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; $infected</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; [1] 0</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; $removed</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; [1] 0.59</span></span></code></pre></div>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>The SIR model package incorporates several features to simulate a
+disease utilizing a matrix. Experiment with different probabilities,
+matrix sizes, and infection start points to best simulate a real-world
+disease outbreak.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
