@@ -1,0 +1,13 @@
+Package: SIR
+Title: Simulate from Susceptible Infected Removed Model
+Version: 0.0.0.9000
+Authors@R: person("Julian", "Pulido","foo", "julianpulido2@csus.edu", ,role = c("aut", "cre"))
+Description: The purpose of this package is to simulate a susceptible, infected, removed (SIR) model. The model is instantiated with 4 infected cells in the corner of a matrix. The infected cells have p probability of infecting adjacent neighbors. After each round, infected cells become 'removed' cells, meaning they have the disease removed.. The model can be simulated with different outcomes by altering nrow, ncol, and probability.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
