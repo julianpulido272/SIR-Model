@@ -1,1 +1,1 @@
-sir.html
+SIR Model 
