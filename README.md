@@ -33,6 +33,20 @@ Given a number of rows `nrow`, number of columns `ncol` and a `proportion` such 
 
 A =random_infect (10,10, 0.25)
 A
+
+#>       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#>  [1,]    0    0    0    0    0    1    0    0    0     0
+#>  [2,]    0    0    1    0    1    0    0    0    0     0
+#>  [3,]    1    0    0    1    0    0    0    1    0     1
+#>  [4,]    1    0    0    0    1    0    1    0    0     0
+#>  [5,]    0    0    0    0    0    0    0    0    1     0
+#>  [6,]    0    0    0    1    0    0    0    0    0     0
+#>  [7,]    1    0    0    0    0    0    1    0    0     1
+#>  [8,]    0    0    0    0    0    1    0    0    0     0
+#>  [9,]    0    0    0    0    0    0    0    1    1     0
+#> [10,]    1    0    0    0    1    1    1    1    0     0
+#> attr(,"class")
+#> [1] "SIRmatrix" "matrix"    "array"
 ```
 
 ### Corner Infect
@@ -43,6 +57,18 @@ Likewise, the model can initially set to only the corners being infected.
 library(SIR)
 
 infect_corner(10,10)
+#>       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#>  [1,]    1    0    0    0    0    0    0    0    0     1
+#>  [2,]    0    0    0    0    0    0    0    0    0     0
+#>  [3,]    0    0    0    0    0    0    0    0    0     0
+#>  [4,]    0    0    0    0    0    0    0    0    0     0
+#>  [5,]    0    0    0    0    0    0    0    0    0     0
+#>  [6,]    0    0    0    0    0    0    0    0    0     0
+#>  [7,]    0    0    0    0    0    0    0    0    0     0
+#>  [8,]    0    0    0    0    0    0    0    0    0     0
+#>  [9,]    0    0    0    0    0    0    0    0    0     0
+#> [10,]    1    0    0    0    0    0    0    0    0     1
+
 ```
 
 ## Plotting
@@ -62,6 +88,8 @@ library(SIR)
 
 plot(A, main = "SIR Model", frame.plot =TRUE )
 ```
+![image](https://github.com/julianpulido272/SIR-Model/assets/102627602/86afeef4-6942-47ed-b485-483383c3b668)
+
 
 ## Simulation
 
@@ -72,7 +100,10 @@ library(SIR)
 
 A =step(A, 0.15)
 plot(A, main = "SIR Model", frame.plot =TRUE )
+
 ```
+![image](https://github.com/julianpulido272/SIR-Model/assets/102627602/b914c0a0-420a-4f75-bd77-2caaf3c1dbf6)
+
 
 After each step in the infection stage, every current infected cell (red) becomes gray, and any nearby neighbors who get infected will become red.
 
@@ -88,6 +119,8 @@ subTitle = sprintf("Proportion Infected: %f\nIterations: %d" ,
 plot(listA$matrix, main= "SIR Model", sub= subTitle)
 
 ```
+![image](https://github.com/julianpulido272/SIR-Model/assets/102627602/07c867eb-79e4-4a30-9d73-653ec81f029d)
+
 
 ## Summarizing Results
 
@@ -103,6 +136,18 @@ Each model simulation be summarized using the `summary()`, which returns a list 
 
 ```{r}
 summary(listA$matrix)
+
+#> $totalCells
+#> [1] 100
+#> 
+#> $susceptible
+#> [1] 0.41
+#> 
+#> $infected
+#> [1] 0
+#> 
+#> $removed
+#> [1] 0.59
 ```
 
 ## Conclusion
